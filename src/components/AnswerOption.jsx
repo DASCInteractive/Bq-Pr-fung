@@ -1,21 +1,21 @@
 const letters = ['A', 'B', 'C', 'D']
 
 export default function AnswerOption({ index, text, selected, correct, revealed, onSelect }) {
-  let bg = 'bg-white border-gray-200'
+  let bg = 'bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-700'
   let animation = ''
 
   if (revealed) {
     if (index === correct) {
-      bg = 'bg-emerald-50 border-emerald-500 text-emerald-900'
+      bg = 'bg-emerald-50 border-emerald-500 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200'
       animation = selected === index ? 'animate-correct' : ''
     } else if (selected === index) {
-      bg = 'bg-red-50 border-red-500 text-red-900'
+      bg = 'bg-red-50 border-red-500 text-red-900 dark:bg-red-950 dark:text-red-200'
       animation = 'animate-wrong'
     } else {
-      bg = 'bg-gray-50 border-gray-200 text-gray-400'
+      bg = 'bg-gray-50 border-gray-200 text-gray-400 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-600'
     }
   } else if (selected === index) {
-    bg = 'bg-blue-50 border-blue-500'
+    bg = 'bg-blue-50 border-blue-500 dark:bg-blue-950 dark:border-blue-400'
   }
 
   return (
@@ -30,7 +30,7 @@ export default function AnswerOption({ index, text, selected, correct, revealed,
             ? 'bg-emerald-500 text-white'
             : selected === index
             ? 'bg-blue-600 text-white'
-            : 'bg-gray-100 text-gray-600'
+            : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
         }`}
       >
         {letters[index]}

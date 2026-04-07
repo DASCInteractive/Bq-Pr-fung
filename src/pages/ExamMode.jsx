@@ -20,6 +20,7 @@ export default function ExamMode() {
   const [started, setStarted] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState({})
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false)
 
   const examQuestions = useMemo(() => {
     if (!questions) return []
@@ -52,17 +53,29 @@ export default function ExamMode() {
 
   if (loading) return <div className="py-12 text-center text-gray-400">Laden...</div>
 
+  if (examQuestions.length === 0) {
+    return (
+      <div className="min-h-screen pb-20">
+        <Header title={`${subject.shortName} – Prüfung`} showBack />
+        <div className="px-4 py-12 text-center">
+          <span className="text-4xl">📭</span>
+          <p className="mt-3 text-gray-500">Keine Fragen verfügbar</p>
+        </div>
+      </div>
+    )
+  }
+
   if (!started) {
     return (
       <div className="min-h-screen pb-20">
         <Header title={`${subject.shortName} – Prüfung`} showBack />
         <div className="mx-auto max-w-lg px-4 py-8 text-center">
           <span className="text-5xl">{subject.icon}</span>
-          <h2 className="mt-4 text-xl font-bold text-gray-900">Prüfungssimulation</h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <h2 className="mt-4 text-xl font-bold text-gray-900 dark:text-gray-100">Prüfungssimulation</h2>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
             {examQuestions.length} Fragen in {EXAM_MINUTES} Minuten
           </p>
-          <ul className="mt-6 space-y-2 text-left text-sm text-gray-600">
+          <ul className="mt-6 space-y-2 text-left text-sm text-gray-600 dark:text-gray-400">
             <li className="flex items-center gap-2">
               <span className="text-blue-600">•</span> Zufällige Auswahl aus allen Themen
             </li>
@@ -114,7 +127,7 @@ export default function ExamMode() {
                   ? 'bg-blue-600 text-white'
                   : answers[i] !== undefined
                   ? 'bg-blue-100 text-blue-700'
-                  : 'bg-gray-100 text-gray-500'
+                  : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
               }`}
             >
               {i + 1}
@@ -162,13 +175,44 @@ export default function ExamMode() {
             </button>
           ) : (
             <button
-              onClick={finishExam}
+              onClick={() => setShowSubmitConfirm(true)}
               className="flex-1 rounded-lg bg-emerald-600 py-3 text-sm font-semibold text-white active:bg-emerald-700"
             >
               Abgeben ({answeredCount}/{examQuestions.length})
             </button>
           )}
         </div>
+
+        {/* Submit confirmation modal */}
+        {showSubmitConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-6">
+            <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-gray-900 p-6 shadow-xl">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Prüfung abgeben?</h3>
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                Du hast {answeredCount} von {examQuestions.length} Fragen beantwortet.
+                {answeredCount < examQuestions.length && (
+                  <span className="mt-1 block text-amber-600 font-medium">
+                    {examQuestions.length - answeredCount} Fragen sind noch offen!
+                  </span>
+                )}
+              </p>
+              <div className="mt-5 flex gap-3">
+                <button
+                  onClick={() => setShowSubmitConfirm(false)}
+                  className="flex-1 rounded-lg border border-gray-300 py-2.5 text-sm font-medium text-gray-700"
+                >
+                  Weiter lernen
+                </button>
+                <button
+                  onClick={finishExam}
+                  className="flex-1 rounded-lg bg-emerald-600 py-2.5 text-sm font-semibold text-white"
+                >
+                  Jetzt abgeben
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

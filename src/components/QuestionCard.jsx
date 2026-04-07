@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
 import AnswerOption from './AnswerOption'
 import ExplanationPanel from './ExplanationPanel'
@@ -6,8 +6,20 @@ import ExplanationPanel from './ExplanationPanel'
 export default function QuestionCard({ question, index, total, onNext, subjectColor }) {
   const [selected, setSelected] = useState(null)
   const [revealed, setRevealed] = useState(false)
+  const [animClass, setAnimClass] = useState('translate-x-0 opacity-100')
   const { recordAnswer, toggleBookmark, isBookmarked } = useApp()
   const bookmarked = isBookmarked(question.id)
+  const touchStartX = useRef(0)
+  const containerRef = useRef(null)
+
+  // Animate in on mount
+  useEffect(() => {
+    setAnimClass('translate-x-4 opacity-0')
+    const id = requestAnimationFrame(() => {
+      setAnimClass('translate-x-0 opacity-100 transition-all duration-200 ease-out')
+    })
+    return () => cancelAnimationFrame(id)
+  }, [question.id])
 
   const handleSelect = (optionIndex) => {
     setSelected(optionIndex)
@@ -18,16 +30,46 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
     const correct = selected === question.correct
     recordAnswer(question.id, correct)
     setRevealed(true)
+
+    // Scroll to explanation
+    setTimeout(() => {
+      containerRef.current?.querySelector('[data-explanation]')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      })
+    }, 100)
   }
 
   const handleNext = () => {
-    setSelected(null)
-    setRevealed(false)
-    onNext()
+    // Animate out then call onNext
+    setAnimClass('transition-all duration-150 ease-in -translate-x-8 opacity-0')
+    setTimeout(() => {
+      setSelected(null)
+      setRevealed(false)
+      onNext()
+    }, 150)
+  }
+
+  // Swipe to next (only after revealed)
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX
+  }
+
+  const handleTouchEnd = (e) => {
+    if (!revealed) return
+    const diff = touchStartX.current - e.changedTouches[0].clientX
+    if (diff > 80) {
+      handleNext()
+    }
   }
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-4">
+    <div
+      ref={containerRef}
+      className={`mx-auto max-w-lg px-4 py-4 ${animClass}`}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* Top bar */}
       <div className="mb-3 flex items-center justify-between">
         <span className="text-xs font-medium text-gray-500">
@@ -47,11 +89,13 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
           </span>
           <button
             onClick={() => toggleBookmark(question.id)}
-            className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100"
+            className="flex h-9 w-9 items-center justify-center rounded-full active:bg-gray-100"
             aria-label={bookmarked ? 'Lesezeichen entfernen' : 'Lesezeichen setzen'}
           >
             <svg
-              className={`h-5 w-5 ${bookmarked ? 'fill-amber-500 text-amber-500' : 'text-gray-400'}`}
+              className={`h-5 w-5 transition-transform duration-200 ${
+                bookmarked ? 'fill-amber-500 text-amber-500 scale-110' : 'text-gray-400 scale-100'
+              }`}
               viewBox="0 0 24 24"
               fill={bookmarked ? 'currentColor' : 'none'}
               stroke="currentColor"
@@ -64,20 +108,20 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
       </div>
 
       {/* Progress bar */}
-      <div className="mb-4 h-1 w-full overflow-hidden rounded-full bg-gray-200">
+      <div className="mb-4 h-1 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800">
         <div
-          className={`h-full rounded-full ${subjectColor || 'bg-blue-600'} transition-all duration-300`}
+          className={`h-full rounded-full ${subjectColor || 'bg-blue-600'} transition-all duration-500`}
           style={{ width: `${((index + 1) / total) * 100}%` }}
         />
       </div>
 
       {/* Topic */}
       {question.topic && (
-        <p className="mb-2 text-xs font-medium text-gray-400">{question.topic}</p>
+        <p className="mb-2 text-xs font-medium text-gray-400 uppercase tracking-wide">{question.topic}</p>
       )}
 
       {/* Question text */}
-      <h2 className="mb-5 text-base font-semibold leading-snug text-gray-900">{question.text}</h2>
+      <h2 className="mb-5 text-base font-semibold leading-snug text-gray-900 dark:text-gray-100">{question.text}</h2>
 
       {/* Options */}
       <div className="space-y-2">
@@ -96,18 +140,20 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
 
       {/* Explanation */}
       {revealed && (
-        <ExplanationPanel explanation={question.explanation} correct={selected === question.correct} />
+        <div data-explanation>
+          <ExplanationPanel explanation={question.explanation} correct={selected === question.correct} />
+        </div>
       )}
 
       {/* Action button */}
-      <div className="mt-5">
+      <div className="mt-5 pb-4">
         {!revealed ? (
           <button
             onClick={handleConfirm}
             disabled={selected === null}
-            className={`w-full rounded-lg py-3 text-sm font-semibold text-white transition-colors ${
+            className={`w-full rounded-xl py-3.5 text-sm font-semibold text-white transition-all duration-200 ${
               selected !== null
-                ? 'bg-blue-600 active:bg-blue-700'
+                ? 'bg-blue-600 active:bg-blue-700 active:scale-[0.98] shadow-sm'
                 : 'bg-gray-300 cursor-not-allowed'
             }`}
           >
@@ -116,10 +162,15 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
         ) : (
           <button
             onClick={handleNext}
-            className="w-full rounded-lg bg-blue-600 py-3 text-sm font-semibold text-white active:bg-blue-700"
+            className="w-full rounded-xl bg-blue-600 py-3.5 text-sm font-semibold text-white shadow-sm active:bg-blue-700 active:scale-[0.98] transition-all duration-200"
           >
-            {index + 1 < total ? 'Nächste Frage' : 'Abschließen'}
+            {index + 1 < total ? 'Nächste Frage →' : 'Abschließen ✓'}
           </button>
+        )}
+
+        {/* Swipe hint after first answer */}
+        {revealed && index === 0 && (
+          <p className="mt-2 text-center text-xs text-gray-400">← Wischen für nächste Frage</p>
         )}
       </div>
     </div>

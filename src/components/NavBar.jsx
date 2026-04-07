@@ -8,7 +8,7 @@ const tabs = [
 
 export default function NavBar() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-gray-200 bg-white pb-safe">
+    <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 pb-safe">
       <div className="mx-auto flex max-w-lg">
         {tabs.map((tab) => (
           <NavLink
@@ -17,7 +17,7 @@ export default function NavBar() {
             end={tab.to === '/'}
             className={({ isActive }) =>
               `flex flex-1 flex-col items-center py-2 text-xs transition-colors ${
-                isActive ? 'text-blue-600' : 'text-gray-500'
+                isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'
               }`
             }
           >

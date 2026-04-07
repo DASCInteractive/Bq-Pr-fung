@@ -29,7 +29,7 @@ export default function ExamResult() {
 
       <div className="mx-auto max-w-lg px-4 py-6">
         {/* Result card */}
-        <div className={`rounded-2xl p-6 text-center ${passed ? 'bg-emerald-50' : 'bg-red-50'}`}>
+        <div className={`rounded-2xl p-6 text-center ${passed ? 'bg-emerald-50 dark:bg-emerald-950' : 'bg-red-50 dark:bg-red-950'}`}>
           <span className="text-5xl">{passed ? '🎉' : '📚'}</span>
           <h2 className={`mt-3 text-2xl font-bold ${passed ? 'text-emerald-700' : 'text-red-700'}`}>
             {passed ? 'Bestanden!' : 'Nicht bestanden'}
@@ -44,13 +44,13 @@ export default function ExamResult() {
               <p className="text-xs text-gray-500">Ergebnis</p>
             </div>
             <div>
-              <p className="text-3xl font-bold text-gray-900">
+              <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
                 {lastExam.score}/{lastExam.total}
               </p>
               <p className="text-xs text-gray-500">Richtig</p>
             </div>
             <div>
-              <p className="text-3xl font-bold text-gray-900">{formatTime(lastExam.duration)}</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{formatTime(lastExam.duration)}</p>
               <p className="text-xs text-gray-500">Zeit</p>
             </div>
           </div>
@@ -67,10 +67,10 @@ export default function ExamResult() {
                   <div
                     key={i}
                     className={`flex items-center justify-between rounded-lg px-3 py-2 ${
-                      isCorrect ? 'bg-emerald-50' : a.selected === null ? 'bg-gray-50' : 'bg-red-50'
+                      isCorrect ? 'bg-emerald-50 dark:bg-emerald-950' : a.selected === null ? 'bg-gray-50 dark:bg-gray-900' : 'bg-red-50 dark:bg-red-950'
                     }`}
                   >
-                    <span className="text-sm text-gray-700">Frage {i + 1}</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Frage {i + 1}</span>
                     <span className={`text-xs font-medium ${isCorrect ? 'text-emerald-600' : a.selected === null ? 'text-gray-400' : 'text-red-600'}`}>
                       {isCorrect ? 'Richtig' : a.selected === null ? 'Keine Antwort' : 'Falsch'}
                     </span>
@@ -91,7 +91,7 @@ export default function ExamResult() {
           </Link>
           <Link
             to={`/fach/${subjectId}`}
-            className="block w-full rounded-lg border border-gray-300 py-3 text-center text-sm font-medium text-gray-700"
+            className="block w-full rounded-lg border border-gray-300 dark:border-gray-700 py-3 text-center text-sm font-medium text-gray-700 dark:text-gray-300"
           >
             Zurück zum Fach
           </Link>

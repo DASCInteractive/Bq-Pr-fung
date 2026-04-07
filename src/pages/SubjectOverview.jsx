@@ -52,15 +52,15 @@ export default function SubjectOverview() {
               <div className="mt-4 grid grid-cols-3 gap-3 text-center">
                 <div>
                   <p className="text-lg font-bold text-gray-900">{stats.answered}</p>
-                  <p className="text-xs text-gray-500">Bearbeitet</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Bearbeitet</p>
                 </div>
                 <div>
                   <p className="text-lg font-bold text-gray-900">{stats.correct}</p>
-                  <p className="text-xs text-gray-500">Richtig</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Richtig</p>
                 </div>
                 <div>
                   <p className="text-lg font-bold text-gray-900">{stats.answered - stats.correct}</p>
-                  <p className="text-xs text-gray-500">Falsch</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Falsch</p>
                 </div>
               </div>
             </div>
@@ -69,11 +69,11 @@ export default function SubjectOverview() {
             <div className="mt-6 space-y-3">
               <Link
                 to={`/lernen/${subjectId}`}
-                className={`flex items-center justify-between rounded-xl bg-white p-4 shadow-sm border-l-4 ${subject.borderClass} active:shadow-md transition-shadow`}
+                className={`flex items-center justify-between rounded-xl bg-white dark:bg-gray-900 p-4 shadow-sm border-l-4 ${subject.borderClass} active:shadow-md transition-shadow`}
               >
                 <div>
-                  <h3 className="font-semibold text-gray-900">Lernmodus</h3>
-                  <p className="text-xs text-gray-500">Alle Fragen durcharbeiten mit Erklärungen</p>
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">Lernmodus</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Alle Fragen durcharbeiten mit Erklärungen</p>
                 </div>
                 <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -82,11 +82,11 @@ export default function SubjectOverview() {
 
               <Link
                 to={`/pruefung/${subjectId}`}
-                className={`flex items-center justify-between rounded-xl bg-white p-4 shadow-sm border-l-4 ${subject.borderClass} active:shadow-md transition-shadow`}
+                className={`flex items-center justify-between rounded-xl bg-white dark:bg-gray-900 p-4 shadow-sm border-l-4 ${subject.borderClass} active:shadow-md transition-shadow`}
               >
                 <div>
-                  <h3 className="font-semibold text-gray-900">Prüfungssimulation</h3>
-                  <p className="text-xs text-gray-500">30 Fragen in 45 Minuten – wie in der echten Prüfung</p>
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">Prüfungssimulation</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">30 Fragen in 45 Minuten – wie in der echten Prüfung</p>
                 </div>
                 <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -98,7 +98,7 @@ export default function SubjectOverview() {
             {lastExam && (
               <div className="mt-6">
                 <h3 className="mb-2 text-sm font-semibold text-gray-500 uppercase tracking-wide">Letzte Prüfung</h3>
-                <div className="rounded-lg bg-white p-4 shadow-sm">
+                <div className="rounded-lg bg-white dark:bg-gray-900 p-4 shadow-sm">
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600">{new Date(lastExam.date).toLocaleDateString('de-DE')}</span>
                     <span className={`font-bold ${lastExam.score / lastExam.total >= 0.5 ? 'text-emerald-600' : 'text-red-600'}`}>
@@ -115,8 +115,8 @@ export default function SubjectOverview() {
                 <h3 className="mb-2 text-sm font-semibold text-gray-500 uppercase tracking-wide">Themen</h3>
                 <div className="space-y-1">
                   {Object.entries(topicMap).map(([topic, data]) => (
-                    <div key={topic} className="flex items-center justify-between rounded-lg bg-white px-3 py-2">
-                      <span className="text-sm text-gray-700">{topic}</span>
+                    <div key={topic} className="flex items-center justify-between rounded-lg bg-white dark:bg-gray-900 px-3 py-2">
+                      <span className="text-sm text-gray-700 dark:text-gray-300">{topic}</span>
                       <span className="text-xs text-gray-400">{data.total} Fragen</span>
                     </div>
                   ))}

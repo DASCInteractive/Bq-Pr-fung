@@ -7,10 +7,25 @@ export function AppProvider({ children }) {
   const [progress, setProgress] = useState(() => load('progress', {}))
   const [bookmarks, setBookmarks] = useState(() => load('bookmarks', []))
   const [examHistory, setExamHistory] = useState(() => load('examHistory', []))
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = load('darkMode')
+    if (saved !== null) return saved
+    return typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches
+  })
 
   useEffect(() => save('progress', progress), [progress])
   useEffect(() => save('bookmarks', bookmarks), [bookmarks])
   useEffect(() => save('examHistory', examHistory), [examHistory])
+  useEffect(() => {
+    save('darkMode', darkMode)
+    if (darkMode) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }, [darkMode])
+
+  const toggleDarkMode = useCallback(() => setDarkMode((d) => !d), [])
 
   const recordAnswer = useCallback((questionId, correct) => {
     setProgress((prev) => {
@@ -67,12 +82,14 @@ export function AppProvider({ children }) {
         progress,
         bookmarks,
         examHistory,
+        darkMode,
         recordAnswer,
         toggleBookmark,
         isBookmarked,
         addExamResult,
         getSubjectProgress,
         resetProgress,
+        toggleDarkMode,
       }}
     >
       {children}

@@ -32,7 +32,7 @@ export default function Home() {
         </div>
 
         {/* Subject cards */}
-        <h2 className="mb-3 text-sm font-semibold text-gray-500 uppercase tracking-wide">Fächer</h2>
+        <h2 className="mb-3 text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Fächer</h2>
         <div className="space-y-3">
           {subjects.map((s) => (
             <SubjectCard key={s.id} subject={s} />

@@ -10,7 +10,7 @@ export default function SubjectCard({ subject }) {
   return (
     <Link
       to={`/fach/${subject.id}`}
-      className={`block rounded-xl border-l-4 ${subject.borderClass} bg-white p-4 shadow-sm active:shadow-md transition-shadow`}
+      className={`block rounded-xl border-l-4 ${subject.borderClass} bg-white dark:bg-gray-900 p-4 shadow-sm active:shadow-md transition-shadow`}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
@@ -18,8 +18,8 @@ export default function SubjectCard({ subject }) {
             <span className="text-xl">{subject.icon}</span>
             <span className={`text-xs font-bold ${subject.textClass}`}>{subject.shortName}</span>
           </div>
-          <h3 className="mt-1 text-sm font-medium text-gray-900">{subject.name}</h3>
-          <p className="mt-1 text-xs text-gray-500">
+          <h3 className="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">{subject.name}</h3>
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
             {correct} / {subject.questionCount} richtig
           </p>
         </div>
