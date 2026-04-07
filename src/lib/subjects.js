@@ -9,7 +9,7 @@ export const subjects = [
     textClass: 'text-blue-600',
     borderClass: 'border-blue-600',
     icon: '⚖️',
-    questionCount: 5,
+    questionCount: 200,
   },
   {
     id: 'bwh',
@@ -21,7 +21,7 @@ export const subjects = [
     textClass: 'text-emerald-600',
     borderClass: 'border-emerald-600',
     icon: '📊',
-    questionCount: 5,
+    questionCount: 200,
   },
   {
     id: 'ikp',
@@ -33,7 +33,7 @@ export const subjects = [
     textClass: 'text-violet-600',
     borderClass: 'border-violet-600',
     icon: '💬',
-    questionCount: 5,
+    questionCount: 200,
   },
   {
     id: 'zib',
@@ -45,7 +45,7 @@ export const subjects = [
     textClass: 'text-amber-600',
     borderClass: 'border-amber-600',
     icon: '🤝',
-    questionCount: 5,
+    questionCount: 200,
   },
   {
     id: 'ntg',
@@ -57,7 +57,7 @@ export const subjects = [
     textClass: 'text-red-600',
     borderClass: 'border-red-600',
     icon: '🔬',
-    questionCount: 5,
+    questionCount: 200,
   },
 ]
 
