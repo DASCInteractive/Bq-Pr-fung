@@ -1,0 +1,81 @@
+{
+  "subject": "zib",
+  "title": "Zusammenarbeit im Betrieb",
+  "questions": [
+    {
+      "id": "zib-001",
+      "text": "Welcher Führungsstil zeichnet sich dadurch aus, dass die Führungskraft alle Entscheidungen allein trifft?",
+      "options": [
+        "Kooperativer Führungsstil",
+        "Laissez-faire Führungsstil",
+        "Autoritärer Führungsstil",
+        "Situativer Führungsstil"
+      ],
+      "correct": 2,
+      "explanation": "Beim autoritären Führungsstil trifft die Führungskraft alle Entscheidungen allein, ohne die Mitarbeiter einzubeziehen.",
+      "difficulty": 1,
+      "topic": "Führungsstile",
+      "subtopic": "Führungsmodelle"
+    },
+    {
+      "id": "zib-002",
+      "text": "Was beschreibt das Management by Objectives (MbO)?",
+      "options": [
+        "Führung durch Ausnahmeregeln",
+        "Führung durch Zielvereinbarung",
+        "Führung durch Delegation",
+        "Führung durch Kontrolle"
+      ],
+      "correct": 1,
+      "explanation": "Management by Objectives bedeutet Führung durch Zielvereinbarung. Führungskraft und Mitarbeiter vereinbaren gemeinsam Ziele.",
+      "difficulty": 1,
+      "topic": "Führungsstile",
+      "subtopic": "Führungsmodelle"
+    },
+    {
+      "id": "zib-003",
+      "text": "Nach Maslows Bedürfnispyramide: Welches Bedürfnis steht an der Spitze?",
+      "options": [
+        "Sicherheitsbedürfnisse",
+        "Soziale Bedürfnisse",
+        "Wertschätzung",
+        "Selbstverwirklichung"
+      ],
+      "correct": 3,
+      "explanation": "Die Spitze der Maslowschen Bedürfnispyramide bildet die Selbstverwirklichung. Die Reihenfolge von unten: Physiologische Bedürfnisse, Sicherheit, Soziale Bedürfnisse, Wertschätzung, Selbstverwirklichung.",
+      "difficulty": 1,
+      "topic": "Motivation",
+      "subtopic": "Motivationstheorien"
+    },
+    {
+      "id": "zib-004",
+      "text": "Ein Mitarbeiter muss sich zwischen zwei attraktiven Jobangeboten entscheiden. Um welchen Konflikttyp handelt es sich?",
+      "options": [
+        "Annäherungs-Annäherungs-Konflikt",
+        "Vermeidungs-Vermeidungs-Konflikt",
+        "Annäherungs-Vermeidungs-Konflikt",
+        "Doppelter Annäherungs-Vermeidungs-Konflikt"
+      ],
+      "correct": 0,
+      "explanation": "Ein Annäherungs-Annäherungs-Konflikt liegt vor, wenn eine Person zwischen zwei gleichermaßen attraktiven Alternativen wählen muss.",
+      "difficulty": 2,
+      "topic": "Konfliktmanagement",
+      "subtopic": "Konfliktarten"
+    },
+    {
+      "id": "zib-005",
+      "text": "Wie viele Ebenen hat das Kommunikationsmodell nach Schulz von Thun?",
+      "options": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "correct": 2,
+      "explanation": "Das Vier-Ohren-Modell von Schulz von Thun umfasst 4 Ebenen: Sachinhalt, Selbstoffenbarung, Beziehung und Appell.",
+      "difficulty": 1,
+      "topic": "Kommunikation",
+      "subtopic": "Vier-Ohren-Modell"
+    }
+  ]
+}

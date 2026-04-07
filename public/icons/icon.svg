@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e40af"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="224" fill="url(#bg)"/>
+  <text x="512" y="420" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="280" font-weight="800" fill="white">BQ</text>
+  <text x="512" y="680" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="120" font-weight="600" fill="rgba(255,255,255,0.85)">Prüfung</text>
+  <rect x="200" y="740" width="624" height="4" rx="2" fill="rgba(255,255,255,0.4)"/>
+  <g fill="rgba(255,255,255,0.6)">
+    <circle cx="340" cy="820" r="20"/>
+    <circle cx="430" cy="820" r="20"/>
+    <circle cx="520" cy="820" r="20"/>
+    <circle cx="610" cy="820" r="20"/>
+    <circle cx="700" cy="820" r="20" fill="rgba(255,255,255,0.9)"/>
+  </g>
+</svg>

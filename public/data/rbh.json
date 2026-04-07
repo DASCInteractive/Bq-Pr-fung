@@ -1,0 +1,81 @@
+{
+  "subject": "rbh",
+  "title": "Rechtsbewusstes Handeln",
+  "questions": [
+    {
+      "id": "rbh-001",
+      "text": "Welche Kündigungsfrist gilt während der Probezeit gemäß § 622 BGB?",
+      "options": [
+        "1 Woche",
+        "2 Wochen",
+        "4 Wochen",
+        "6 Wochen"
+      ],
+      "correct": 1,
+      "explanation": "Gemäß § 622 Abs. 3 BGB kann das Arbeitsverhältnis während einer vereinbarten Probezeit von höchstens 6 Monaten mit einer Frist von 2 Wochen gekündigt werden.",
+      "difficulty": 1,
+      "topic": "Arbeitsvertragsrecht",
+      "subtopic": "Kündigungsfristen"
+    },
+    {
+      "id": "rbh-002",
+      "text": "Ab welcher Betriebszugehörigkeit beträgt die gesetzliche Kündigungsfrist 2 Monate zum Monatsende?",
+      "options": [
+        "2 Jahre",
+        "5 Jahre",
+        "8 Jahre",
+        "10 Jahre"
+      ],
+      "correct": 1,
+      "explanation": "Nach § 622 Abs. 2 Nr. 2 BGB beträgt die Kündigungsfrist nach 5 Jahren Betriebszugehörigkeit 2 Monate zum Ende eines Kalendermonats.",
+      "difficulty": 2,
+      "topic": "Arbeitsvertragsrecht",
+      "subtopic": "Kündigungsfristen"
+    },
+    {
+      "id": "rbh-003",
+      "text": "Ab wie vielen ständig beschäftigten Arbeitnehmern kann ein Betriebsrat gewählt werden?",
+      "options": [
+        "3",
+        "5",
+        "10",
+        "20"
+      ],
+      "correct": 1,
+      "explanation": "Gemäß § 1 BetrVG können in Betrieben mit in der Regel mindestens 5 ständigen wahlberechtigten Arbeitnehmern Betriebsräte gewählt werden.",
+      "difficulty": 1,
+      "topic": "Betriebsverfassungsgesetz",
+      "subtopic": "Betriebsrat"
+    },
+    {
+      "id": "rbh-004",
+      "text": "Wer ist nach dem Arbeitsschutzgesetz für die Durchführung der Gefährdungsbeurteilung verantwortlich?",
+      "options": [
+        "Die Fachkraft für Arbeitssicherheit",
+        "Der Betriebsarzt",
+        "Der Arbeitgeber",
+        "Der Betriebsrat"
+      ],
+      "correct": 2,
+      "explanation": "Nach § 5 ArbSchG ist der Arbeitgeber verpflichtet, eine Beurteilung der Arbeitsbedingungen durchzuführen.",
+      "difficulty": 1,
+      "topic": "Arbeitsschutzrecht",
+      "subtopic": "Gefährdungsbeurteilung"
+    },
+    {
+      "id": "rbh-005",
+      "text": "Welches Kriterium gehört NICHT zu den Sozialauswahlkriterien bei betriebsbedingter Kündigung?",
+      "options": [
+        "Betriebszugehörigkeit",
+        "Lebensalter",
+        "Geschlecht",
+        "Unterhaltspflichten"
+      ],
+      "correct": 2,
+      "explanation": "Nach § 1 Abs. 3 KSchG sind Betriebszugehörigkeit, Lebensalter, Unterhaltspflichten und Schwerbehinderung die Kriterien der Sozialauswahl. Das Geschlecht gehört nicht dazu.",
+      "difficulty": 2,
+      "topic": "Kündigungsschutz",
+      "subtopic": "Sozialauswahl"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "subject": "ikp",
+  "title": "Information, Kommunikation, Planung",
+  "questions": [
+    {
+      "id": "ikp-001",
+      "text": "Was beschreibt der kritische Pfad in einem Netzplan?",
+      "options": [
+        "Den kürzesten Weg durch das Projekt",
+        "Den längsten Weg durch das Projekt",
+        "Den kostengünstigsten Weg",
+        "Den Weg mit den meisten Ressourcen"
+      ],
+      "correct": 1,
+      "explanation": "Der kritische Pfad ist der längste Weg durch den Netzplan und bestimmt die minimale Projektdauer. Verzögerungen auf diesem Pfad verzögern das gesamte Projekt.",
+      "difficulty": 2,
+      "topic": "Projektmanagement",
+      "subtopic": "Netzplantechnik"
+    },
+    {
+      "id": "ikp-002",
+      "text": "Was versteht man unter einem Meilenstein im Projektmanagement?",
+      "options": [
+        "Eine regelmäßige Teambesprechung",
+        "Ein wichtiges Zwischenergebnis oder Ereignis",
+        "Eine Kostenschätzung",
+        "Ein Risikofaktor"
+      ],
+      "correct": 1,
+      "explanation": "Ein Meilenstein markiert ein wichtiges Zwischenergebnis oder Ereignis im Projektverlauf. Er hat keine Dauer und dient der Fortschrittskontrolle.",
+      "difficulty": 1,
+      "topic": "Projektmanagement",
+      "subtopic": "Netzplantechnik"
+    },
+    {
+      "id": "ikp-003",
+      "text": "Welche Kategorien werden im klassischen Ishikawa-Diagramm (6M) NICHT verwendet?",
+      "options": [
+        "Mensch und Maschine",
+        "Material und Methode",
+        "Mitwelt und Messung",
+        "Marketing und Management"
+      ],
+      "correct": 3,
+      "explanation": "Die 6M des Ishikawa-Diagramms sind: Mensch, Maschine, Material, Methode, Mitwelt (Umwelt) und Messung. Marketing und Management gehören nicht dazu.",
+      "difficulty": 2,
+      "topic": "Problemlösungstechniken",
+      "subtopic": "Ishikawa-Diagramm"
+    },
+    {
+      "id": "ikp-004",
+      "text": "Was ist bei einer Präsentation die sogenannte KISS-Regel?",
+      "options": [
+        "Keep It Short and Simple",
+        "Keep Information Structured and Systematic",
+        "Know It, Show It, Sell It",
+        "Key Ideas Should Summarize"
+      ],
+      "correct": 0,
+      "explanation": "KISS steht für Keep It Short and Simple und empfiehlt, Präsentationen einfach und verständlich zu halten.",
+      "difficulty": 1,
+      "topic": "Kommunikationstechniken",
+      "subtopic": "Präsentation"
+    },
+    {
+      "id": "ikp-005",
+      "text": "Was ist ein wesentliches Merkmal von Industrie 4.0?",
+      "options": [
+        "Einführung der Dampfmaschine",
+        "Fließbandproduktion",
+        "Vernetzung cyber-physischer Systeme",
+        "Einführung der Elektrizität"
+      ],
+      "correct": 2,
+      "explanation": "Industrie 4.0 bezeichnet die vierte industrielle Revolution und ist geprägt durch die Vernetzung von cyber-physischen Systemen, IoT und intelligenter Produktion.",
+      "difficulty": 1,
+      "topic": "IT-Grundlagen",
+      "subtopic": "Industrie 4.0"
+    }
+  ]
+}

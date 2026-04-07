@@ -1,0 +1,81 @@
+{
+  "subject": "bwh",
+  "title": "Betriebswirtschaftliches Handeln",
+  "questions": [
+    {
+      "id": "bwh-001",
+      "text": "Was versteht man unter variablen Kosten?",
+      "options": [
+        "Kosten, die unabhängig von der Produktionsmenge anfallen",
+        "Kosten, die sich mit der Produktionsmenge verändern",
+        "Kosten, die nur einmalig entstehen",
+        "Kosten, die dem Produkt direkt zurechenbar sind"
+      ],
+      "correct": 1,
+      "explanation": "Variable Kosten sind Kosten, die sich proportional, progressiv oder degressiv mit der Ausbringungsmenge verändern, z.B. Materialkosten.",
+      "difficulty": 1,
+      "topic": "Kostenrechnung",
+      "subtopic": "Kostenarten"
+    },
+    {
+      "id": "bwh-002",
+      "text": "Ein Unternehmen hat fixe Kosten von 50.000 EUR und variable Stückkosten von 20 EUR. Bei einem Verkaufspreis von 45 EUR liegt der Break-even-Point bei:",
+      "options": [
+        "1.000 Stück",
+        "2.000 Stück",
+        "2.500 Stück",
+        "5.000 Stück"
+      ],
+      "correct": 1,
+      "explanation": "Break-even: Fixkosten / (Preis - variable Stückkosten) = 50.000 / (45 - 20) = 50.000 / 25 = 2.000 Stück.",
+      "difficulty": 2,
+      "topic": "Kostenrechnung",
+      "subtopic": "Kostenarten"
+    },
+    {
+      "id": "bwh-003",
+      "text": "Eine Maschine kostet 120.000 EUR und erwirtschaftet jährlich einen Gewinn von 30.000 EUR. Wie lang ist die statische Amortisationszeit?",
+      "options": [
+        "2 Jahre",
+        "3 Jahre",
+        "4 Jahre",
+        "5 Jahre"
+      ],
+      "correct": 2,
+      "explanation": "Statische Amortisationszeit = Investitionssumme / jährlicher Rückfluss = 120.000 / 30.000 = 4 Jahre.",
+      "difficulty": 1,
+      "topic": "Investitionsrechnung",
+      "subtopic": "Amortisation"
+    },
+    {
+      "id": "bwh-004",
+      "text": "Wofür steht das Akronym PDCA im Qualitätsmanagement?",
+      "options": [
+        "Plan-Do-Check-Act",
+        "Plan-Design-Control-Audit",
+        "Process-Define-Check-Analyze",
+        "Product-Development-Control-Assessment"
+      ],
+      "correct": 0,
+      "explanation": "Der PDCA-Zyklus (Deming-Kreis) steht für Plan-Do-Check-Act und beschreibt einen iterativen Verbesserungsprozess.",
+      "difficulty": 1,
+      "topic": "Qualitätsmanagement",
+      "subtopic": "PDCA-Zyklus"
+    },
+    {
+      "id": "bwh-005",
+      "text": "Bei der ABC-Analyse werden die A-Güter typischerweise charakterisiert durch:",
+      "options": [
+        "Hohen Mengenanteil und hohen Wertanteil",
+        "Geringen Mengenanteil und hohen Wertanteil",
+        "Hohen Mengenanteil und geringen Wertanteil",
+        "Geringen Mengenanteil und geringen Wertanteil"
+      ],
+      "correct": 1,
+      "explanation": "A-Güter haben typischerweise einen Mengenanteil von ca. 10-20% aber einen Wertanteil von ca. 70-80% am Gesamtbestand.",
+      "difficulty": 2,
+      "topic": "Materialwirtschaft",
+      "subtopic": "ABC-Analyse"
+    }
+  ]
+}

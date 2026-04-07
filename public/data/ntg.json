@@ -1,0 +1,81 @@
+{
+  "subject": "ntg",
+  "title": "Naturwiss. & techn. Gesetzmäßigkeiten",
+  "questions": [
+    {
+      "id": "ntg-001",
+      "text": "Ein Stahlträger mit einer Querschnittsfläche von 20 cm² wird mit einer Kraft von 100 kN belastet. Wie groß ist die Zugspannung?",
+      "options": [
+        "50 N/mm²",
+        "500 N/mm²",
+        "5.000 N/mm²",
+        "50.000 N/mm²"
+      ],
+      "correct": 1,
+      "explanation": "σ = F/A = 100.000 N / 2.000 mm² = 50 N/mm². Achtung: 20 cm² = 2.000 mm².",
+      "difficulty": 2,
+      "topic": "Mechanik",
+      "subtopic": "Kräfte"
+    },
+    {
+      "id": "ntg-002",
+      "text": "Wie lautet die Formel für das Drehmoment?",
+      "options": [
+        "M = F · s",
+        "M = F · l",
+        "M = m · a",
+        "M = P · t"
+      ],
+      "correct": 1,
+      "explanation": "Das Drehmoment M berechnet sich aus Kraft F multipliziert mit dem Hebelarm l: M = F · l (Einheit: Nm).",
+      "difficulty": 1,
+      "topic": "Mechanik",
+      "subtopic": "Kräfte"
+    },
+    {
+      "id": "ntg-003",
+      "text": "An einem Widerstand von 470 Ω liegt eine Spannung von 12 V an. Wie groß ist der Strom?",
+      "options": [
+        "Ca. 25,5 mA",
+        "Ca. 39,2 mA",
+        "Ca. 0,026 A",
+        "Antwort A und C sind richtig"
+      ],
+      "correct": 3,
+      "explanation": "I = U/R = 12V / 470Ω = 0,02553 A ≈ 25,5 mA. Somit sind Antwort A (25,5 mA) und C (0,026 A ≈ 26 mA) beide korrekt (Rundungsdifferenz).",
+      "difficulty": 2,
+      "topic": "Elektrotechnik",
+      "subtopic": "Ohmsches Gesetz"
+    },
+    {
+      "id": "ntg-004",
+      "text": "Ein Stahlrohr ist bei 20°C genau 5 m lang. Wie lang ist es bei 120°C? (Ausdehnungskoeffizient Stahl: 12 · 10⁻⁶ 1/K)",
+      "options": [
+        "5,003 m",
+        "5,006 m",
+        "5,012 m",
+        "5,060 m"
+      ],
+      "correct": 1,
+      "explanation": "ΔL = L₀ · α · ΔT = 5 m · 12·10⁻⁶ · 100 K = 0,006 m. Neue Länge: 5,006 m.",
+      "difficulty": 2,
+      "topic": "Thermodynamik",
+      "subtopic": "Wärmeausdehnung"
+    },
+    {
+      "id": "ntg-005",
+      "text": "Ein Produkt kostet 250 EUR netto. Wie hoch ist der Bruttopreis bei 19% MwSt?",
+      "options": [
+        "269,50 EUR",
+        "280,00 EUR",
+        "297,50 EUR",
+        "300,00 EUR"
+      ],
+      "correct": 2,
+      "explanation": "Brutto = Netto · 1,19 = 250 · 1,19 = 297,50 EUR.",
+      "difficulty": 1,
+      "topic": "Mathematik",
+      "subtopic": "Prozentrechnung"
+    }
+  ]
+}
