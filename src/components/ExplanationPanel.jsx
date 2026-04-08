@@ -8,7 +8,7 @@ export default function ExplanationPanel({ explanation, correct }) {
       }`}
     >
       <div className="mb-1 flex items-center gap-2">
-        <span className="text-lg">{correct ? '✓' : '✗'}</span>
+        <span className="text-lg">{correct ? '\u2713' : '\u2717'}</span>
         <span className={`text-sm font-semibold ${correct ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400'}`}>
           {correct ? 'Richtig!' : 'Falsch!'}
         </span>

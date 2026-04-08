@@ -11,7 +11,7 @@ export default function Header({ title, showBack = false }) {
           <button
             onClick={() => navigate(-1)}
             className="mr-3 flex h-8 w-8 items-center justify-center rounded-full hover:bg-blue-600 active:bg-blue-800"
-            aria-label="Zurück"
+            aria-label="Zur\u00fcck"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />

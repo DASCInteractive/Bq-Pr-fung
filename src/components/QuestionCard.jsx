@@ -12,7 +12,6 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
   const touchStartX = useRef(0)
   const containerRef = useRef(null)
 
-  // Animate in on mount
   useEffect(() => {
     setAnimClass('translate-x-4 opacity-0')
     const id = requestAnimationFrame(() => {
@@ -30,8 +29,6 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
     const correct = selected === question.correct
     recordAnswer(question.id, correct)
     setRevealed(true)
-
-    // Scroll to explanation
     setTimeout(() => {
       containerRef.current?.querySelector('[data-explanation]')?.scrollIntoView({
         behavior: 'smooth',
@@ -41,7 +38,6 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
   }
 
   const handleNext = () => {
-    // Animate out then call onNext
     setAnimClass('transition-all duration-150 ease-in -translate-x-8 opacity-0')
     setTimeout(() => {
       setSelected(null)
@@ -50,7 +46,6 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
     }, 150)
   }
 
-  // Swipe to next (only after revealed)
   const handleTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX
   }
@@ -70,7 +65,6 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Top bar */}
       <div className="mb-3 flex items-center justify-between">
         <span className="text-xs font-medium text-gray-500">
           Frage {index + 1} / {total}
@@ -107,7 +101,6 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
         </div>
       </div>
 
-      {/* Progress bar */}
       <div className="mb-4 h-1 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800">
         <div
           className={`h-full rounded-full ${subjectColor || 'bg-blue-600'} transition-all duration-500`}
@@ -115,15 +108,12 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
         />
       </div>
 
-      {/* Topic */}
       {question.topic && (
         <p className="mb-2 text-xs font-medium text-gray-400 uppercase tracking-wide">{question.topic}</p>
       )}
 
-      {/* Question text */}
       <h2 className="mb-5 text-base font-semibold leading-snug text-gray-900 dark:text-gray-100">{question.text}</h2>
 
-      {/* Options */}
       <div className="space-y-2">
         {question.options.map((opt, i) => (
           <AnswerOption
@@ -138,14 +128,12 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
         ))}
       </div>
 
-      {/* Explanation */}
       {revealed && (
         <div data-explanation>
           <ExplanationPanel explanation={question.explanation} correct={selected === question.correct} />
         </div>
       )}
 
-      {/* Action button */}
       <div className="mt-5 pb-4">
         {!revealed ? (
           <button
@@ -157,20 +145,19 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
                 : 'bg-gray-300 cursor-not-allowed'
             }`}
           >
-            Antwort prüfen
+            Antwort pr\u00fcfen
           </button>
         ) : (
           <button
             onClick={handleNext}
             className="w-full rounded-xl bg-blue-600 py-3.5 text-sm font-semibold text-white shadow-sm active:bg-blue-700 active:scale-[0.98] transition-all duration-200"
           >
-            {index + 1 < total ? 'Nächste Frage →' : 'Abschließen ✓'}
+            {index + 1 < total ? 'N\u00e4chste Frage \u2192' : 'Abschlie\u00dfen \u2713'}
           </button>
         )}
 
-        {/* Swipe hint after first answer */}
         {revealed && index === 0 && (
-          <p className="mt-2 text-center text-xs text-gray-400">← Wischen für nächste Frage</p>
+          <p className="mt-2 text-center text-xs text-gray-400">\u2190 Wischen f\u00fcr n\u00e4chste Frage</p>
         )}
       </div>
     </div>
