@@ -25,7 +25,6 @@ body {
   }
 }
 
-/* Answer feedback animations */
 @keyframes correct-pulse {
   0% { transform: scale(1); }
   50% { transform: scale(1.02); }
@@ -46,7 +45,6 @@ body {
   animation: shake 0.3s ease-in-out;
 }
 
-/* Smooth page transitions */
 .page-enter {
   opacity: 0;
   transform: translateY(8px);

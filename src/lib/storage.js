@@ -13,7 +13,7 @@ export function save(key, value) {
   try {
     localStorage.setItem(PREFIX + key, JSON.stringify(value))
   } catch {
-    // localStorage full – silent fail
+    // localStorage full
   }
 }
 
