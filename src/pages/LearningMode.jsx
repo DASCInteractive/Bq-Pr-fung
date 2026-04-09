@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getSubject } from '../lib/subjects'
 import { useQuestions } from '../hooks/useQuestions'
@@ -14,23 +14,30 @@ export default function LearningMode() {
   const { questions, loading } = useQuestions(subjectId)
   const { progress } = useApp()
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [filter, setFilter] = useState('all') // 'all' | 'unanswered' | 'wrong'
+  const [filter, setFilter] = useState('all')
+  const [shuffledQuestions, setShuffledQuestions] = useState([])
 
-  const filteredQuestions = useMemo(() => {
-    if (!questions) return []
+  // Only re-shuffle when filter or questions change, NOT on every progress update
+  useEffect(() => {
+    if (!questions) {
+      setShuffledQuestions([])
+      return
+    }
     let filtered = questions
     if (filter === 'unanswered') {
       filtered = questions.filter((q) => !progress[q.id])
     } else if (filter === 'wrong') {
       filtered = questions.filter((q) => progress[q.id] && !progress[q.id].correct)
     }
-    return shuffle(filtered)
-  }, [questions, filter, progress])
+    setShuffledQuestions(shuffle([...filtered]))
+    setCurrentIndex(0)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [questions, filter])
 
   if (!subject) return <div className="p-8 text-center text-gray-500">Fach nicht gefunden</div>
 
   const handleNext = () => {
-    if (currentIndex + 1 >= filteredQuestions.length) {
+    if (currentIndex + 1 >= shuffledQuestions.length) {
       navigate(`/fach/${subjectId}`)
     } else {
       setCurrentIndex((i) => i + 1)
@@ -39,12 +46,11 @@ export default function LearningMode() {
 
   const handleFilterChange = (newFilter) => {
     setFilter(newFilter)
-    setCurrentIndex(0)
   }
 
   return (
     <div className="min-h-screen pb-20">
-      <Header title={`${subject.shortName} – Lernen`} showBack />
+      <Header title={`${subject.shortName} \u2013 Lernen`} showBack />
 
       {loading ? (
         <div className="py-12 text-center text-gray-400">Laden...</div>
@@ -71,7 +77,7 @@ export default function LearningMode() {
             ))}
           </div>
 
-          {filteredQuestions.length === 0 ? (
+          {shuffledQuestions.length === 0 ? (
             <div className="px-4 py-12 text-center">
               <p className="text-gray-500">
                 {filter === 'wrong' ? 'Keine falsch beantworteten Fragen.' : 'Keine unbeantworteten Fragen.'}
@@ -85,10 +91,10 @@ export default function LearningMode() {
             </div>
           ) : (
             <QuestionCard
-              key={filteredQuestions[currentIndex].id}
-              question={filteredQuestions[currentIndex]}
+              key={shuffledQuestions[currentIndex].id}
+              question={shuffledQuestions[currentIndex]}
               index={currentIndex}
-              total={filteredQuestions.length}
+              total={shuffledQuestions.length}
               onNext={handleNext}
               subjectColor={subject.colorClass}
             />
