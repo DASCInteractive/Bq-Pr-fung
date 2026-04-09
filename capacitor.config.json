@@ -1,0 +1,8 @@
+{
+  "appId": "de.bqpruefung.app",
+  "appName": "BQ Pr\u00fcfung",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}
