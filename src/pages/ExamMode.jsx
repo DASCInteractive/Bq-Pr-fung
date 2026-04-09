@@ -1,217 +1,153 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getSubject } from '../lib/subjects'
-import { useQuestions } from '../hooks/useQuestions'
-import { useExamTimer } from '../hooks/useExamTimer'
 import { useApp } from '../context/AppContext'
-import { shuffle } from '../lib/utils'
-import Header from '../components/Header'
-import Timer from '../components/Timer'
-import AnswerOption from '../components/AnswerOption'
 
-const EXAM_MINUTES = 45
+const letters = ['A', 'B', 'C', 'D']
+
+function shuffleArray(arr) {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
 
 export default function ExamMode() {
   const { subjectId } = useParams()
   const navigate = useNavigate()
   const subject = getSubject(subjectId)
-  const { questions, loading } = useQuestions(subjectId)
-  const { addExamResult } = useApp()
-  const [started, setStarted] = useState(false)
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [answers, setAnswers] = useState({})
-  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false)
+  const { addExamResult, recordAnswer } = useApp()
 
-  const examQuestions = useMemo(() => {
-    if (!questions) return []
-    const count = Math.min(questions.length, 30)
-    return shuffle(questions).slice(0, count)
-  }, [questions])
+  const [questions, setQuestions] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [idx, setIdx] = useState(0)
+  const [picked, setPicked] = useState(null)
+  const [score, setScore] = useState(0)
+  const [totalAnswered, setTotalAnswered] = useState(0)
 
-  const finishExam = useCallback(() => {
-    const score = examQuestions.reduce((acc, q, i) => {
-      return acc + (answers[i] === q.correct ? 1 : 0)
-    }, 0)
-    addExamResult({
-      subject: subjectId,
-      date: new Date().toISOString(),
-      score,
-      total: examQuestions.length,
-      duration: timer.elapsed,
-      answers: examQuestions.map((q, i) => ({
-        questionId: q.id,
-        selected: answers[i] ?? null,
-        correct: q.correct,
-      })),
-    })
-    navigate(`/ergebnis/${subjectId}`, { replace: true })
-  }, [answers, examQuestions, subjectId, addExamResult, navigate])
+  const loaded = useRef(false)
+  useEffect(() => {
+    if (loaded.current) return
+    loaded.current = true
+    fetch(`/data/${subjectId}.json`)
+      .then(r => r.json())
+      .then(data => {
+        setQuestions(shuffleArray(data.questions).slice(0, 30))
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
+  }, [subjectId])
 
-  const timer = useExamTimer(EXAM_MINUTES, finishExam)
+  if (!subject) return <p className="p-8 text-center">Fach nicht gefunden</p>
+  if (loading) return <p className="p-8 text-center text-gray-400">Laden...</p>
+  if (!questions || questions.length === 0) return <p className="p-8 text-center">Keine Fragen</p>
 
-  if (!subject) return <div className="p-8 text-center text-gray-500">Fach nicht gefunden</div>
+  const q = questions[idx]
+  const isCorrect = picked === q.correct
+  const hasAnswered = picked !== null
 
-  if (loading) return <div className="py-12 text-center text-gray-400">Laden...</div>
-
-  if (examQuestions.length === 0) {
-    return (
-      <div className="min-h-screen pb-20">
-        <Header title={`${subject.shortName} – Prüfung`} showBack />
-        <div className="px-4 py-12 text-center">
-          <span className="text-4xl">📭</span>
-          <p className="mt-3 text-gray-500">Keine Fragen verfügbar</p>
-        </div>
-      </div>
-    )
+  function clickAnswer(i) {
+    if (picked !== null) return
+    setPicked(i)
+    recordAnswer(q.id, i === q.correct)
+    setTotalAnswered(totalAnswered + 1)
+    if (i === q.correct) setScore(score + 1)
   }
 
-  if (!started) {
-    return (
-      <div className="min-h-screen pb-20">
-        <Header title={`${subject.shortName} – Prüfung`} showBack />
-        <div className="mx-auto max-w-lg px-4 py-8 text-center">
-          <span className="text-5xl">{subject.icon}</span>
-          <h2 className="mt-4 text-xl font-bold text-gray-900 dark:text-gray-100">Prüfungssimulation</h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            {examQuestions.length} Fragen in {EXAM_MINUTES} Minuten
-          </p>
-          <ul className="mt-6 space-y-2 text-left text-sm text-gray-600 dark:text-gray-400">
-            <li className="flex items-center gap-2">
-              <span className="text-blue-600">•</span> Zufällige Auswahl aus allen Themen
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="text-blue-600">•</span> Timer läuft nach Start automatisch
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="text-blue-600">•</span> Du kannst zwischen Fragen navigieren
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="text-blue-600">•</span> Auswertung am Ende
-            </li>
-          </ul>
-          <button
-            onClick={() => { setStarted(true); timer.start() }}
-            className={`mt-8 w-full rounded-lg ${subject.colorClass} py-3 text-sm font-semibold text-white active:opacity-90`}
-          >
-            Prüfung starten
-          </button>
-        </div>
-      </div>
-    )
+  function clickNext() {
+    if (idx + 1 >= questions.length) {
+      addExamResult({
+        subject: subjectId,
+        date: new Date().toISOString(),
+        score: score,
+        total: questions.length,
+      })
+      navigate(`/ergebnis/${subjectId}?score=${score}&total=${questions.length}`, { replace: true })
+    } else {
+      setIdx(idx + 1)
+      setPicked(null)
+    }
   }
-
-  const question = examQuestions[currentIndex]
-  const answeredCount = Object.keys(answers).length
 
   return (
-    <div className="min-h-screen pb-20">
-      {/* Exam header with timer */}
-      <header className="sticky top-0 z-30 bg-blue-700 text-white shadow-md">
-        <div className="mx-auto flex max-w-lg items-center justify-between px-4 py-3">
-          <span className="text-sm font-medium">
-            {currentIndex + 1} / {examQuestions.length}
-          </span>
-          <Timer remaining={timer.remaining} total={EXAM_MINUTES * 60} />
-        </div>
-      </header>
-
-      {/* Question navigation dots */}
-      <div className="mx-auto max-w-lg overflow-x-auto px-4 pt-3">
-        <div className="flex gap-1.5">
-          {examQuestions.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentIndex(i)}
-              className={`h-7 w-7 flex-shrink-0 rounded-full text-xs font-medium transition-colors ${
-                i === currentIndex
-                  ? 'bg-blue-600 text-white'
-                  : answers[i] !== undefined
-                  ? 'bg-blue-100 text-blue-700'
-                  : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div>
+    <div className="min-h-screen bg-gray-50 pb-24">
+      <div className="bg-blue-600 text-white px-4 py-4 flex items-center justify-between">
+        <button onClick={() => navigate(`/fach/${subjectId}`)} className="text-white text-lg">←</button>
+        <h1 className="text-lg font-bold">{subject.shortName} – Prüfung</h1>
+        <span className="text-sm">{score}/{totalAnswered}</span>
       </div>
 
-      {/* Question */}
-      <div className="mx-auto max-w-lg px-4 py-4">
-        {question.topic && (
-          <p className="mb-2 text-xs font-medium text-gray-400">{question.topic}</p>
-        )}
-        <h2 className="mb-5 text-base font-semibold leading-snug text-gray-900">{question.text}</h2>
+      <div className="max-w-lg mx-auto px-4 py-4">
+        <p className="text-xs text-gray-500 mb-1">Frage {idx + 1} / {questions.length}</p>
 
-        <div className="space-y-2">
-          {question.options.map((opt, i) => (
-            <AnswerOption
+        <h2 className="text-base font-semibold text-gray-900 mb-4 leading-relaxed">{q.text}</h2>
+
+        {q.options.map((opt, i) => {
+          let bg = 'bg-white border-gray-200'
+          let text = 'text-gray-900'
+          let icon = null
+
+          if (hasAnswered) {
+            if (i === q.correct) {
+              bg = 'bg-green-100 border-green-500'
+              text = 'text-green-900'
+              icon = <span className="ml-auto text-green-600 text-lg font-bold">✓</span>
+            } else if (i === picked) {
+              bg = 'bg-red-100 border-red-500'
+              text = 'text-red-900'
+              icon = <span className="ml-auto text-red-600 text-lg font-bold">✗</span>
+            } else {
+              bg = 'bg-gray-50 border-gray-200'
+              text = 'text-gray-400'
+            }
+          }
+
+          return (
+            <button
               key={i}
-              index={i}
-              text={opt}
-              selected={answers[currentIndex] ?? null}
-              correct={-1}
-              revealed={false}
-              onSelect={(idx) => setAnswers((prev) => ({ ...prev, [currentIndex]: idx }))}
-            />
-          ))}
-        </div>
-
-        {/* Navigation */}
-        <div className="mt-5 flex gap-3">
-          <button
-            onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
-            disabled={currentIndex === 0}
-            className="flex-1 rounded-lg border border-gray-300 py-3 text-sm font-medium text-gray-700 disabled:opacity-30"
-          >
-            Zurück
-          </button>
-          {currentIndex < examQuestions.length - 1 ? (
-            <button
-              onClick={() => setCurrentIndex((i) => i + 1)}
-              className="flex-1 rounded-lg bg-blue-600 py-3 text-sm font-semibold text-white active:bg-blue-700"
+              onClick={() => clickAnswer(i)}
+              className={`w-full flex items-center gap-3 p-3 mb-2 rounded-lg border-2 text-left ${bg} ${text}`}
             >
-              Weiter
+              <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                hasAnswered && i === q.correct ? 'bg-green-500 text-white' :
+                hasAnswered && i === picked ? 'bg-red-500 text-white' :
+                'bg-gray-100 text-gray-600'
+              }`}>
+                {letters[i]}
+              </span>
+              <span className="text-sm flex-1">{opt}</span>
+              {icon}
             </button>
-          ) : (
-            <button
-              onClick={() => setShowSubmitConfirm(true)}
-              className="flex-1 rounded-lg bg-emerald-600 py-3 text-sm font-semibold text-white active:bg-emerald-700"
-            >
-              Abgeben ({answeredCount}/{examQuestions.length})
-            </button>
-          )}
-        </div>
+          )
+        })}
 
-        {/* Submit confirmation modal */}
-        {showSubmitConfirm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-6">
-            <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-gray-900 p-6 shadow-xl">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Prüfung abgeben?</h3>
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                Du hast {answeredCount} von {examQuestions.length} Fragen beantwortet.
-                {answeredCount < examQuestions.length && (
-                  <span className="mt-1 block text-amber-600 font-medium">
-                    {examQuestions.length - answeredCount} Fragen sind noch offen!
-                  </span>
-                )}
+        {hasAnswered && (
+          <div className={`mt-4 p-4 rounded-lg border-2 ${
+            isCorrect ? 'bg-green-50 border-green-500' : 'bg-red-50 border-red-500'
+          }`}>
+            <p className={`text-xl font-bold ${isCorrect ? 'text-green-700' : 'text-red-700'}`}>
+              {isCorrect ? '✓ Richtig!' : '✗ Falsch!'}
+            </p>
+            {!isCorrect && (
+              <p className="text-sm text-red-600 mt-1">
+                Richtige Antwort: {letters[q.correct]}
               </p>
-              <div className="mt-5 flex gap-3">
-                <button
-                  onClick={() => setShowSubmitConfirm(false)}
-                  className="flex-1 rounded-lg border border-gray-300 py-2.5 text-sm font-medium text-gray-700"
-                >
-                  Weiter lernen
-                </button>
-                <button
-                  onClick={finishExam}
-                  className="flex-1 rounded-lg bg-emerald-600 py-2.5 text-sm font-semibold text-white"
-                >
-                  Jetzt abgeben
-                </button>
-              </div>
-            </div>
+            )}
+            {q.explanation && (
+              <p className="text-sm text-gray-600 mt-2">{q.explanation}</p>
+            )}
           </div>
+        )}
+
+        {hasAnswered && (
+          <button
+            onClick={clickNext}
+            className="w-full mt-4 bg-blue-600 text-white py-3 rounded-lg font-semibold text-sm"
+          >
+            {idx + 1 < questions.length ? 'Nächste Frage →' : 'Ergebnis anzeigen →'}
+          </button>
         )}
       </div>
     </div>

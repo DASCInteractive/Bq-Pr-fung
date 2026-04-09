@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
-import { subjects, getSubject } from '../lib/subjects'
-import Header from '../components/Header'
-import QuestionCard from '../components/QuestionCard'
+import { subjects } from '../lib/subjects'
+
+const letters = ['A', 'B', 'C', 'D']
 
 export default function Bookmarks() {
-  const { bookmarks } = useApp()
+  const navigate = useNavigate()
+  const { bookmarks, recordAnswer } = useApp()
   const [allQuestions, setAllQuestions] = useState([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [activeSubject, setActiveSubject] = useState(null)
-  const [finished, setFinished] = useState(false)
+  const [idx, setIdx] = useState(0)
+  const [picked, setPicked] = useState(null)
 
   useEffect(() => {
     if (bookmarks.length === 0) {
@@ -19,128 +19,129 @@ export default function Bookmarks() {
       setLoading(false)
       return
     }
-
-    setLoading(true)
-    setError(null)
     const subjectsNeeded = [...new Set(bookmarks.map((id) => id.split('-')[0]))]
     Promise.all(
       subjectsNeeded.map((s) =>
-        fetch(`/data/${s}.json`)
-          .then((r) => {
-            if (!r.ok) throw new Error(`Fehler beim Laden von ${s}`)
-            return r.json()
-          })
-          .then((d) => d.questions)
+        fetch(`/data/${s}.json`).then((r) => r.json()).then((d) => d.questions)
       )
-    )
-      .then((arrays) => {
-        const all = arrays.flat().filter((q) => bookmarks.includes(q.id))
-        setAllQuestions(all)
-        setLoading(false)
-      })
-      .catch((err) => {
-        setError(err.message)
-        setLoading(false)
-      })
+    ).then((arrays) => {
+      setAllQuestions(arrays.flat().filter((q) => bookmarks.includes(q.id)))
+      setLoading(false)
+    }).catch(() => setLoading(false))
   }, [bookmarks])
 
-  const filtered = activeSubject
-    ? allQuestions.filter((q) => q.id.startsWith(activeSubject + '-'))
-    : allQuestions
+  if (loading) return <p className="p-8 text-center text-gray-400">Laden...</p>
 
-  const safeIndex = Math.min(currentIndex, Math.max(0, filtered.length - 1))
-
-  const subjectsWithBookmarks = subjects.filter((s) =>
-    bookmarks.some((id) => id.startsWith(s.id + '-'))
-  )
-
-  const handleNext = () => {
-    if (safeIndex + 1 >= filtered.length) {
-      setFinished(true)
-    } else {
-      setCurrentIndex(safeIndex + 1)
-    }
-  }
-
-  const handleRestart = () => {
-    setCurrentIndex(0)
-    setFinished(false)
-  }
-
-  return (
-    <div className="min-h-screen pb-20">
-      <Header title="Merkliste" />
-
-      {loading ? (
-        <div className="py-12 text-center text-gray-400">Laden...</div>
-      ) : error ? (
-        <div className="px-4 py-12 text-center">
-          <span className="text-4xl">⚠️</span>
-          <p className="mt-3 text-gray-500">{error}</p>
+  if (allQuestions.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 pb-24">
+        <div className="bg-blue-600 text-white px-4 py-4 text-center">
+          <h1 className="text-lg font-bold">Merkliste</h1>
         </div>
-      ) : allQuestions.length === 0 ? (
         <div className="px-4 py-12 text-center">
           <span className="text-4xl">📌</span>
           <p className="mt-3 text-gray-500">Noch keine Fragen markiert</p>
-          <p className="mt-1 text-sm text-gray-400">
-            Tippe beim Lernen auf das Lesezeichen-Symbol
-          </p>
         </div>
-      ) : (
-        <>
-          {/* Subject filter */}
-          <div className="mx-auto flex max-w-lg gap-1.5 overflow-x-auto px-4 pt-3">
-            <button
-              onClick={() => { setActiveSubject(null); setCurrentIndex(0); setFinished(false) }}
-              className={`flex-shrink-0 rounded-full px-3 py-1 text-xs font-medium ${
-                !activeSubject ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
-              }`}
-            >
-              Alle ({allQuestions.length})
-            </button>
-            {subjectsWithBookmarks.map((s) => {
-              const count = allQuestions.filter((q) => q.id.startsWith(s.id + '-')).length
-              return (
-                <button
-                  key={s.id}
-                  onClick={() => { setActiveSubject(s.id); setCurrentIndex(0); setFinished(false) }}
-                  className={`flex-shrink-0 rounded-full px-3 py-1 text-xs font-medium ${
-                    activeSubject === s.id ? `${s.colorClass} text-white` : 'bg-gray-100 text-gray-600'
-                  }`}
-                >
-                  {s.shortName} ({count})
-                </button>
-              )
-            })}
-          </div>
+      </div>
+    )
+  }
 
-          {finished ? (
-            <div className="px-4 py-12 text-center">
-              <span className="text-4xl">✅</span>
-              <p className="mt-3 font-semibold text-gray-700">Alle markierten Fragen durchgearbeitet!</p>
-              <button
-                onClick={handleRestart}
-                className="mt-4 rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white"
-              >
-                Nochmal von vorne
-              </button>
-            </div>
-          ) : filtered.length > 0 ? (
-            <QuestionCard
-              key={filtered[safeIndex].id}
-              question={filtered[safeIndex]}
-              index={safeIndex}
-              total={filtered.length}
-              onNext={handleNext}
-              subjectColor={getSubject(filtered[safeIndex].id.split('-')[0])?.colorClass}
-            />
-          ) : (
-            <div className="px-4 py-12 text-center">
-              <p className="text-gray-500">Keine Lesezeichen in diesem Fach</p>
-            </div>
-          )}
-        </>
-      )}
+  const q = allQuestions[idx]
+  if (!q) return null
+
+  const hasAnswered = picked !== null
+  const isCorrect = picked === q.correct
+
+  function clickAnswer(i) {
+    if (picked !== null) return
+    setPicked(i)
+    recordAnswer(q.id, i === q.correct)
+  }
+
+  function clickNext() {
+    if (idx + 1 >= allQuestions.length) {
+      setIdx(0)
+      setPicked(null)
+    } else {
+      setIdx(idx + 1)
+      setPicked(null)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 pb-24">
+      <div className="bg-blue-600 text-white px-4 py-4 text-center">
+        <h1 className="text-lg font-bold">Merkliste</h1>
+      </div>
+
+      <div className="max-w-lg mx-auto px-4 py-4">
+        <p className="text-xs text-gray-500 mb-1">Frage {idx + 1} / {allQuestions.length}</p>
+        <h2 className="text-base font-semibold text-gray-900 mb-4 leading-relaxed">{q.text}</h2>
+
+        {q.options.map((opt, i) => {
+          let bg = 'bg-white border-gray-200'
+          let text = 'text-gray-900'
+          let icon = null
+
+          if (hasAnswered) {
+            if (i === q.correct) {
+              bg = 'bg-green-100 border-green-500'
+              text = 'text-green-900'
+              icon = <span className="ml-auto text-green-600 text-lg font-bold">✓</span>
+            } else if (i === picked) {
+              bg = 'bg-red-100 border-red-500'
+              text = 'text-red-900'
+              icon = <span className="ml-auto text-red-600 text-lg font-bold">✗</span>
+            } else {
+              bg = 'bg-gray-50 border-gray-200'
+              text = 'text-gray-400'
+            }
+          }
+
+          return (
+            <button
+              key={i}
+              onClick={() => clickAnswer(i)}
+              className={`w-full flex items-center gap-3 p-3 mb-2 rounded-lg border-2 text-left ${bg} ${text}`}
+            >
+              <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                hasAnswered && i === q.correct ? 'bg-green-500 text-white' :
+                hasAnswered && i === picked ? 'bg-red-500 text-white' :
+                'bg-gray-100 text-gray-600'
+              }`}>
+                {letters[i]}
+              </span>
+              <span className="text-sm flex-1">{opt}</span>
+              {icon}
+            </button>
+          )
+        })}
+
+        {hasAnswered && (
+          <div className={`mt-4 p-4 rounded-lg border-2 ${
+            isCorrect ? 'bg-green-50 border-green-500' : 'bg-red-50 border-red-500'
+          }`}>
+            <p className={`text-xl font-bold ${isCorrect ? 'text-green-700' : 'text-red-700'}`}>
+              {isCorrect ? '✓ Richtig!' : '✗ Falsch!'}
+            </p>
+            {!isCorrect && (
+              <p className="text-sm text-red-600 mt-1">Richtige Antwort: {letters[q.correct]}</p>
+            )}
+            {q.explanation && (
+              <p className="text-sm text-gray-600 mt-2">{q.explanation}</p>
+            )}
+          </div>
+        )}
+
+        {hasAnswered && (
+          <button
+            onClick={clickNext}
+            className="w-full mt-4 bg-blue-600 text-white py-3 rounded-lg font-semibold text-sm"
+          >
+            Nächste Frage →
+          </button>
+        )}
+      </div>
     </div>
   )
 }

@@ -1,43 +1,40 @@
+import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import { subjects } from '../lib/subjects'
-import { percent } from '../lib/utils'
-import Header from '../components/Header'
-import SubjectCard from '../components/SubjectCard'
 
 export default function Home() {
   const { getSubjectProgress } = useApp()
 
-  const totalQuestions = subjects.reduce((sum, s) => sum + s.questionCount, 0)
-  const totalCorrect = subjects.reduce((sum, s) => sum + getSubjectProgress(s.id).correct, 0)
-  const pct = percent(totalCorrect, totalQuestions)
-
   return (
-    <div className="min-h-screen pb-20">
-      <Header title="BQ Prüfung" />
+    <div className="min-h-screen bg-gray-50 pb-24">
+      <div className="bg-blue-600 text-white px-4 py-6 text-center">
+        <h1 className="text-xl font-bold">BQ Prüfung</h1>
+        <p className="text-sm opacity-80 mt-1">Industriemeister Basisqualifikation</p>
+      </div>
 
-      <div className="mx-auto max-w-lg px-4 py-5">
-        {/* Overall progress */}
-        <div className="mb-6 rounded-xl bg-blue-700 p-5 text-white shadow-lg">
-          <p className="text-sm font-medium opacity-80">Gesamtfortschritt</p>
-          <div className="mt-1 flex items-end justify-between">
-            <span className="text-3xl font-bold">{pct}%</span>
-            <span className="text-sm opacity-70">{totalCorrect} / {totalQuestions}</span>
-          </div>
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-blue-900">
-            <div
-              className="h-full rounded-full bg-white transition-all duration-700"
-              style={{ width: `${pct}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Subject cards */}
-        <h2 className="mb-3 text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Fächer</h2>
-        <div className="space-y-3">
-          {subjects.map((s) => (
-            <SubjectCard key={s.id} subject={s} />
-          ))}
-        </div>
+      <div className="max-w-lg mx-auto px-4 py-4 space-y-3">
+        {subjects.map((s) => {
+          const p = getSubjectProgress(s.id)
+          const pct = s.questionCount > 0 ? Math.round((p.correct / s.questionCount) * 100) : 0
+          return (
+            <Link
+              key={s.id}
+              to={`/fach/${s.id}`}
+              className="block bg-white rounded-xl p-4 shadow-sm border border-gray-100"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">{s.icon}</span>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900">{s.name}</h3>
+                  <p className="text-xs text-gray-500">{s.questionCount} Fragen · {pct}% richtig</p>
+                </div>
+              </div>
+              <div className="mt-2 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div className={`h-full ${s.colorClass} rounded-full`} style={{ width: `${pct}%` }} />
+              </div>
+            </Link>
+          )
+        })}
       </div>
     </div>
   )
