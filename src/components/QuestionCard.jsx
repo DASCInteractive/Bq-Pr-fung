@@ -11,6 +11,8 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
 
   const handleAnswer = (i) => {
     if (showResult) return
+    const correct = i === question.correct
+    window.alert(correct ? 'RICHTIG!' : 'FALSCH! Richtige Antwort: ' + letters[question.correct])
     setSelected(i)
     setShowResult(true)
   }
@@ -102,7 +104,7 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
                 padding: 12,
                 marginBottom: 8,
                 borderRadius: 8,
-                border: `2px solid ${borderColor}`,
+                border: '2px solid ' + borderColor,
                 background: bg,
                 color: textColor,
                 textAlign: 'left',
