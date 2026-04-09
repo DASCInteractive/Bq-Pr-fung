@@ -6,6 +6,7 @@ import ExplanationPanel from './ExplanationPanel'
 export default function QuestionCard({ question, index, total, onNext, subjectColor }) {
   const [selected, setSelected] = useState(null)
   const [revealed, setRevealed] = useState(false)
+  const [canProceed, setCanProceed] = useState(false)
   const [animClass, setAnimClass] = useState('translate-x-0 opacity-100')
   const { recordAnswer, toggleBookmark, isBookmarked } = useApp()
   const bookmarked = isBookmarked(question.id)
@@ -28,6 +29,10 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
     const correct = optionIndex === question.correct
     recordAnswer(question.id, correct)
     setRevealed(true)
+    setCanProceed(false)
+
+    // Allow proceeding after a short delay to prevent accidental taps
+    setTimeout(() => setCanProceed(true), 800)
 
     // Scroll to explanation
     setTimeout(() => {
@@ -39,22 +44,24 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
   }
 
   const handleNext = () => {
+    if (!canProceed) return
     // Animate out then call onNext
     setAnimClass('transition-all duration-150 ease-in -translate-x-8 opacity-0')
     setTimeout(() => {
       setSelected(null)
       setRevealed(false)
+      setCanProceed(false)
       onNext()
     }, 150)
   }
 
-  // Swipe to next (only after revealed)
+  // Swipe to next (only after revealed and canProceed)
   const handleTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX
   }
 
   const handleTouchEnd = (e) => {
-    if (!revealed) return
+    if (!revealed || !canProceed) return
     const diff = touchStartX.current - e.changedTouches[0].clientX
     if (diff > 80) {
       handleNext()
@@ -136,25 +143,56 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
         ))}
       </div>
 
-      {/* Explanation */}
+      {/* Feedback banner */}
       {revealed && (
-        <div data-explanation>
-          <ExplanationPanel explanation={question.explanation} correct={selected === question.correct} />
+        <div className={`mt-4 flex items-center gap-3 rounded-xl p-4 ${
+          selected === question.correct
+            ? 'bg-emerald-50 dark:bg-emerald-950'
+            : 'bg-red-50 dark:bg-red-950'
+        }`}>
+          <span className="text-3xl">{selected === question.correct ? '\u2705' : '\u274C'}</span>
+          <div>
+            <p className={`text-lg font-bold ${
+              selected === question.correct
+                ? 'text-emerald-700 dark:text-emerald-300'
+                : 'text-red-700 dark:text-red-300'
+            }`}>
+              {selected === question.correct ? 'Richtig!' : 'Falsch!'}
+            </p>
+            {selected !== question.correct && (
+              <p className="text-sm text-red-600 dark:text-red-400">
+                Richtige Antwort: {['A', 'B', 'C', 'D'][question.correct]}
+              </p>
+            )}
+          </div>
         </div>
       )}
 
-      {/* Next button - only shown after answer */}
+      {/* Explanation */}
+      {revealed && (
+        <div data-explanation className="mt-3 rounded-xl bg-gray-50 dark:bg-gray-900 p-4 border border-gray-200 dark:border-gray-700">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Erkl\u00e4rung</p>
+          <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">{question.explanation}</p>
+        </div>
+      )}
+
+      {/* Next button - only shown after answer with delay */}
       {revealed && (
         <div className="mt-5 pb-4">
           <button
             onClick={handleNext}
-            className="w-full rounded-xl bg-blue-600 py-3.5 text-sm font-semibold text-white shadow-sm active:bg-blue-700 active:scale-[0.98] transition-all duration-200"
+            disabled={!canProceed}
+            className={`w-full rounded-xl py-3.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 ${
+              canProceed
+                ? 'bg-blue-600 active:bg-blue-700 active:scale-[0.98]'
+                : 'bg-gray-300 cursor-not-allowed'
+            }`}
           >
             {index + 1 < total ? 'N\u00e4chste Frage \u2192' : 'Abschlie\u00dfen \u2713'}
           </button>
 
           {/* Swipe hint after first answer */}
-          {index === 0 && (
+          {index === 0 && canProceed && (
             <p className="mt-2 text-center text-xs text-gray-400">\u2190 Wischen f\u00fcr n\u00e4chste Frage</p>
           )}
         </div>
