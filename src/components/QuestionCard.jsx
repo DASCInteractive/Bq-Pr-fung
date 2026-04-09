@@ -1,80 +1,46 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useApp } from '../context/AppContext'
-import AnswerOption from './AnswerOption'
-import ExplanationPanel from './ExplanationPanel'
+
+const letters = ['A', 'B', 'C', 'D']
 
 export default function QuestionCard({ question, index, total, onNext, subjectColor }) {
   const [selected, setSelected] = useState(null)
   const [revealed, setRevealed] = useState(false)
   const [canProceed, setCanProceed] = useState(false)
-  const [animClass, setAnimClass] = useState('translate-x-0 opacity-100')
   const { recordAnswer, toggleBookmark, isBookmarked } = useApp()
   const bookmarked = isBookmarked(question.id)
-  const touchStartX = useRef(0)
-  const containerRef = useRef(null)
+  const answeredRef = useRef(false)
 
-  // Animate in on mount
+  // Reset state when question changes
   useEffect(() => {
-    setAnimClass('translate-x-4 opacity-0')
-    const id = requestAnimationFrame(() => {
-      setAnimClass('translate-x-0 opacity-100 transition-all duration-200 ease-out')
-    })
-    return () => cancelAnimationFrame(id)
+    setSelected(null)
+    setRevealed(false)
+    setCanProceed(false)
+    answeredRef.current = false
   }, [question.id])
 
-  const handleSelect = (optionIndex) => {
-    if (revealed) return
+  const handleSelect = useCallback((optionIndex) => {
+    if (revealed || answeredRef.current) return
+    answeredRef.current = true
     setSelected(optionIndex)
-    // Immediate feedback
-    const correct = optionIndex === question.correct
-    recordAnswer(question.id, correct)
     setRevealed(true)
-    setCanProceed(false)
+    // Delay before allowing next
+    setTimeout(() => setCanProceed(true), 1000)
+  }, [revealed])
 
-    // Allow proceeding after a short delay to prevent accidental taps
-    setTimeout(() => setCanProceed(true), 800)
-
-    // Scroll to explanation
-    setTimeout(() => {
-      containerRef.current?.querySelector('[data-explanation]')?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-      })
-    }, 100)
-  }
-
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (!canProceed) return
-    // Animate out then call onNext
-    setAnimClass('transition-all duration-150 ease-in -translate-x-8 opacity-0')
-    setTimeout(() => {
-      setSelected(null)
-      setRevealed(false)
-      setCanProceed(false)
-      onNext()
-    }, 150)
-  }
-
-  // Swipe to next (only after revealed and canProceed)
-  const handleTouchStart = (e) => {
-    touchStartX.current = e.touches[0].clientX
-  }
-
-  const handleTouchEnd = (e) => {
-    if (!revealed || !canProceed) return
-    const diff = touchStartX.current - e.changedTouches[0].clientX
-    if (diff > 80) {
-      handleNext()
+    // Record answer to context only when moving on
+    if (selected !== null) {
+      recordAnswer(question.id, selected === question.correct)
     }
-  }
+    onNext()
+  }, [canProceed, selected, question.id, question.correct, recordAnswer, onNext])
+
+  const isCorrect = selected === question.correct
 
   return (
-    <div
-      ref={containerRef}
-      className={`mx-auto max-w-lg px-4 py-4 ${animClass}`}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-    >
+    <div className="mx-auto max-w-lg px-4 py-4">
       {/* Top bar */}
       <div className="mb-3 flex items-center justify-between">
         <span className="text-xs font-medium text-gray-500">
@@ -95,11 +61,10 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
           <button
             onClick={() => toggleBookmark(question.id)}
             className="flex h-9 w-9 items-center justify-center rounded-full active:bg-gray-100"
-            aria-label={bookmarked ? 'Lesezeichen entfernen' : 'Lesezeichen setzen'}
           >
             <svg
-              className={`h-5 w-5 transition-transform duration-200 ${
-                bookmarked ? 'fill-amber-500 text-amber-500 scale-110' : 'text-gray-400 scale-100'
+              className={`h-5 w-5 ${
+                bookmarked ? 'fill-amber-500 text-amber-500' : 'text-gray-400'
               }`}
               viewBox="0 0 24 24"
               fill={bookmarked ? 'currentColor' : 'none'}
@@ -113,7 +78,7 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
       </div>
 
       {/* Progress bar */}
-      <div className="mb-4 h-1 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800">
+      <div className="mb-4 h-1 w-full overflow-hidden rounded-full bg-gray-200">
         <div
           className={`h-full rounded-full ${subjectColor || 'bg-blue-600'} transition-all duration-500`}
           style={{ width: `${((index + 1) / total) * 100}%` }}
@@ -126,42 +91,77 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
       )}
 
       {/* Question text */}
-      <h2 className="mb-5 text-base font-semibold leading-snug text-gray-900 dark:text-gray-100">{question.text}</h2>
+      <h2 className="mb-5 text-base font-semibold leading-snug text-gray-900">{question.text}</h2>
 
       {/* Options */}
       <div className="space-y-2">
-        {question.options.map((opt, i) => (
-          <AnswerOption
-            key={i}
-            index={i}
-            text={opt}
-            selected={selected}
-            correct={question.correct}
-            revealed={revealed}
-            onSelect={handleSelect}
-          />
-        ))}
+        {question.options.map((opt, i) => {
+          let bg = 'background: white; border: 2px solid #e5e7eb;'
+          let letterBg = 'background: #f3f4f6; color: #4b5563;'
+          let textColor = 'color: #111827;'
+
+          if (revealed) {
+            if (i === question.correct) {
+              bg = 'background: #ecfdf5; border: 2px solid #10b981;'
+              letterBg = 'background: #10b981; color: white;'
+              textColor = 'color: #065f46;'
+            } else if (selected === i) {
+              bg = 'background: #fef2f2; border: 2px solid #ef4444;'
+              letterBg = 'background: #ef4444; color: white;'
+              textColor = 'color: #991b1b;'
+            } else {
+              bg = 'background: #f9fafb; border: 2px solid #e5e7eb;'
+              textColor = 'color: #9ca3af;'
+            }
+          } else if (selected === i) {
+            bg = 'background: #eff6ff; border: 2px solid #3b82f6;'
+            letterBg = 'background: #3b82f6; color: white;'
+          }
+
+          return (
+            <button
+              key={i}
+              onClick={() => handleSelect(i)}
+              disabled={revealed}
+              style={{ cssText: `${bg} display: flex; width: 100%; align-items: flex-start; gap: 12px; border-radius: 8px; padding: 12px; text-align: left;` }}
+            >
+              <span
+                style={{ cssText: `${letterBg} display: flex; height: 28px; width: 28px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 50%; font-size: 12px; font-weight: 700;` }}
+              >
+                {letters[i]}
+              </span>
+              <span style={{ cssText: `${textColor} padding-top: 2px; font-size: 14px; line-height: 1.4;` }}>{opt}</span>
+            </button>
+          )
+        })}
       </div>
 
       {/* Feedback banner */}
       {revealed && (
-        <div className={`mt-4 flex items-center gap-3 rounded-xl p-4 ${
-          selected === question.correct
-            ? 'bg-emerald-50 dark:bg-emerald-950'
-            : 'bg-red-50 dark:bg-red-950'
-        }`}>
-          <span className="text-3xl">{selected === question.correct ? '\u2705' : '\u274C'}</span>
+        <div
+          style={{
+            marginTop: '16px',
+            padding: '16px',
+            borderRadius: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            background: isCorrect ? '#ecfdf5' : '#fef2f2',
+            border: isCorrect ? '2px solid #10b981' : '2px solid #ef4444',
+          }}
+        >
+          <span style={{ fontSize: '32px' }}>{isCorrect ? '\u2705' : '\u274C'}</span>
           <div>
-            <p className={`text-lg font-bold ${
-              selected === question.correct
-                ? 'text-emerald-700 dark:text-emerald-300'
-                : 'text-red-700 dark:text-red-300'
-            }`}>
-              {selected === question.correct ? 'Richtig!' : 'Falsch!'}
+            <p style={{
+              fontSize: '18px',
+              fontWeight: 'bold',
+              color: isCorrect ? '#065f46' : '#991b1b',
+            }}>
+              {isCorrect ? 'Richtig!' : 'Falsch!'}
             </p>
-            {selected !== question.correct && (
-              <p className="text-sm text-red-600 dark:text-red-400">
-                Richtige Antwort: {['A', 'B', 'C', 'D'][question.correct]}
+            {!isCorrect && (
+              <p style={{ fontSize: '14px', color: '#dc2626', marginTop: '2px' }}>
+                Richtige Antwort: {letters[question.correct]}
               </p>
             )}
           </div>
@@ -170,31 +170,38 @@ export default function QuestionCard({ question, index, total, onNext, subjectCo
 
       {/* Explanation */}
       {revealed && (
-        <div data-explanation className="mt-3 rounded-xl bg-gray-50 dark:bg-gray-900 p-4 border border-gray-200 dark:border-gray-700">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Erkl\u00e4rung</p>
-          <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">{question.explanation}</p>
+        <div style={{
+          marginTop: '12px',
+          padding: '16px',
+          borderRadius: '12px',
+          background: '#f9fafb',
+          border: '1px solid #e5e7eb',
+        }}>
+          <p style={{ fontSize: '11px', fontWeight: '600', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Erkl\u00e4rung</p>
+          <p style={{ fontSize: '14px', lineHeight: '1.6', color: '#374151' }}>{question.explanation}</p>
         </div>
       )}
 
-      {/* Next button - only shown after answer with delay */}
+      {/* Next button */}
       {revealed && (
-        <div className="mt-5 pb-4">
+        <div style={{ marginTop: '20px', paddingBottom: '16px' }}>
           <button
             onClick={handleNext}
             disabled={!canProceed}
-            className={`w-full rounded-xl py-3.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 ${
-              canProceed
-                ? 'bg-blue-600 active:bg-blue-700 active:scale-[0.98]'
-                : 'bg-gray-300 cursor-not-allowed'
-            }`}
+            style={{
+              width: '100%',
+              padding: '14px',
+              borderRadius: '12px',
+              border: 'none',
+              fontSize: '14px',
+              fontWeight: '600',
+              color: 'white',
+              background: canProceed ? '#2563eb' : '#d1d5db',
+              cursor: canProceed ? 'pointer' : 'not-allowed',
+            }}
           >
             {index + 1 < total ? 'N\u00e4chste Frage \u2192' : 'Abschlie\u00dfen \u2713'}
           </button>
-
-          {/* Swipe hint after first answer */}
-          {index === 0 && canProceed && (
-            <p className="mt-2 text-center text-xs text-gray-400">\u2190 Wischen f\u00fcr n\u00e4chste Frage</p>
-          )}
         </div>
       )}
     </div>
